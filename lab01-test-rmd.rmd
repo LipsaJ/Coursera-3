@@ -1,0 +1,67 @@
+---
+title: "Test your R install!"
+subtitle: "Not graded"
+output: html_document
+---
+
+# Introduction
+
+This is an R install test document.  We compile it in a way that the
+code will not be visible, you will just have the output.  Imagine this
+is a report, and your boss is deeply uninterested in the code.  But
+she very much wants to see the results!
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+The document should compile without errors, and produce a nice html.
+
+
+# Load data from a non-default package
+
+```{r cars}
+data(father.son, package="UsingR")
+```
+
+Here we loaded data (Galton 1886 parents/children height data) from
+package _UsingR_.  You probably have to install that package.  The
+dataset has `r nrow(father.son)` rows.
+
+# Use **dplyr** commands
+
+```{r}
+fs <- father.son %>% 
+  mutate(fheight=fheight*2.54,
+         sheight=sheight*2.54)
+```
+Here we use dplyr to convert inches to centimeters: the fathers'
+average height is `r round(mean(fs$fheight), 1)` cm.
+
+If it works, you have a functioning dplyr installation.
+
+
+# Do some plotting
+
+Finally, here is the plot of the data (`message=FALSE` avoids
+informative messages from code):
+
+```{r, message=FALSE, fig.cap="Height of parents and offsprings"}
+ggplot(fs, aes(fheight, sheight)) +
+  geom_abline(slope=1, intercept=0, color="orangered3") +
+  geom_point() +
+  geom_smooth(method="lm", se=FALSE) +
+  labs(x = "Fathers height (cm)",
+       y = "Sons height (cm)")
+```
+
+The black dots depict parent-child pairs (although the data claims it
+is about fathers and sons, Galton was in fact also using mothers and
+daughters).  The red line is one-to-one relationship, meaning that
+one cm taller parents have in average one cm taller children.  As the
+blue regression line shows, this is not at all the case.  Taller
+parents have taller children, but not as much above the mean as
+parents.  This is what Galton (1886) called "regression to mediocrity"
+and we call "regression to mean".
