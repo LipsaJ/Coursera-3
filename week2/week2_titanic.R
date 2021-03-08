@@ -1,0 +1,85 @@
+getwd()
+titanic <- read.delim("../data/titanic.csv.bz2")
+head(titanic)
+titanic <- read.delim("../data/titanic.csv.bz2", sep = ".")
+titanic <- read.delim(file = "../data/titanic.csv.bz2", sep = ".")
+titanic <- read.csv("../data/titanic.csv.bz2")
+titanic$type
+head(titanic)
+names(titanic)
+titanic <- read.csv("titanic.csv.bz2")
+titanic <- read.csv("../data/titanic.csv.bz2")
+names(titanic)
+library(tidyverse)  # or load other libraries you want to use
+sum(is.na(titanic$pclass))
+sum(is.na(titanic$survived))
+sum(is.na(titanic$name))
+sum(is.na(titanic$sex))
+sum(is.na(titanic$age))
+library(tidyverse)  # loaded tidyverse
+## checking if any of the important variables are missing values
+sum(is.na(titanic$pclass))
+sum(is.na(titanic$survived))
+sum(is.na(titanic$name))
+sum(is.na(titanic$sex))
+## split the data into classes
+## and compute the survival rates
+first <- titanic[titanic$pclass == 1,]
+second <- titanic[titanic$pclass == 2,]
+third <- titanic[titanic$pclass == 3,]
+first
+## split the data into classes
+## and compute the survival rates
+first <- titanic[titanic$pclass == 1,]
+second <- titanic[titanic$pclass == 2,]
+third <- titanic[titanic$pclass == 3,]
+mean(first$survived, na.rm = TRUE)
+mean(second$survived, na.rm = TRUE)
+mean(third$survived, na.rm = TRUE)
+## checking if any of the relevent variables are missing values
+sum(first)
+## checking if any of the relevent variables are missing values
+count(first)
+count(second)
+count(third)
+## checking if any of the relevent variables are missing values
+nrow(first)
+nrow(second)
+nrow(third)
+## checking if any of the relevent variables are missing values
+nrow(first)
+nrow(second)
+nrow(third)
+count(first$survived)
+## checking if any of the relevent variables are missing values
+nrow(first)
+nrow(second)
+nrow(third)
+sum(first$survived)
+sum(second$survived)
+sum(third$survived)
+head(titanic,2)
+tail(titanic,2)
+## checking the total number of seats in each class
+nrow(first)
+nrow(second)
+nrow(third)
+## count of people who survived in each class
+sum(first$survived)
+sum(second$survived)
+sum(third$survived)
+## checking if any of the relevent variables are missing values
+sum(is.na(titanic$pclass))
+sum(is.na(titanic$survived))
+sum(is.na(titanic$sex)
+## checking if any of the relevent variables are missing value - titanic ages 
+# sum(is.na(titanic$age))
+head(titanic,2)
+tail(titanic,2)
+male <- titanic[titanic$sex == male,]
+male <- titanic[titanic$sex == male,]
+male <- titanic[titanic$sex == 'male',]
+female <- titanic[titanic$sex == 'female',]
+mean(male$survived, na.rm = TRUE)
+mean(female$survived, na.rm = TRUE)
+    
