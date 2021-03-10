@@ -1,0 +1,122 @@
+---
+title: "week3A"
+author: "Lipsa Jena"
+date: "10/12/2020"
+output: html_document
+---
+
+#first read data
+```{r}
+gsa <- read.delim("../data/GSAF5.csv.bz2", stringsAsFactors = FALSE)
+names(gsa)
+```
+
+#to insert a r code chunk in cmnd + option + i
+# you can have seperate set directory in rmd file and in console
+
+#below is traditional filtering
+```{r}
+gsa[gsa$Year == 2000,]
+```
+
+#pipes~ is %>% , it takes a result and feed it to another
+```{r}
+add(2*eggs, sugar) %>%
+  whisk() %>%
+```
+
+# pipe operator 
+# traditional approach
+```{r}
+print(sqrt(2))
+```
+```{r, message=False}
+library(dplyr)
+```
+
+
+```{r, message=False}
+2 %>%  sqrt() %>% print()
+
+```
+# exercise
+compute and print mean of 1,2,3,4 using pipes
+```{r}
+c(1,2,3,4) %>% mean() %>% print() #first way
+1:4 %>% mean() %>% print() #second way
+
+```
+
+# dplyr library
+
+* select: select _variables_
+* filter: filter _observations_
+* mutate: compute on observation basis
+* arrange: order
+* summarize: collapse many obseravtions into a few figures
+
+## select variables
+```{r}
+
+gsa %>% 
+  select(Year, Country, Type, Fatal..Y.N.) %>%
+  head(10)
+```
+```{r}
+gsa %>%
+  filter(Country == "AUSTRALIA") %>%
+  select(Date:Country, Fatal..Y.N.) %>%
+  head(10)
+```
+#filter country china and taiwan
+```{r}
+gsa %>%
+  filter(Country %in%  c("CHINA","TAIWAN"))  %>%
+  ## filter(Country ==  c("CHINA","TAIWAN"))  %>% checks only first few rows not the full dataset
+  select(Date:Country, Fatal..Y.N.) %>%
+  print()
+```
+## Arrange
+
+```{r}
+gsa %>%
+  select(Date:Country, Fatal..Y.N.) %>%
+  filter(!(Country %in% c("CHINA","TAIWAN"))) %>%
+  filter(!is.na(Year)) %>%
+  arrange(Year) %>%
+  head(10)
+```
+
+## Arrange
+
+```{r}
+gsa %>%
+  select(Date:Country, Fatal..Y.N.) %>%
+  filter(!(Country %in% c("CHINA","TAIWAN"))) %>%
+  filter(!is.na(Year)) %>%
+  arrange(desc(Year), Country) %>%
+  head(10)
+```
+
+
+## summarize
+```{r}
+gsa %>%
+  filter(!is.na(Year)) %>%
+  summarise(min = min(Year), avg = mean(Year), max = max(Year))
+```
+
+##grouped operations
+
+* split data into groups
+* imagine groups are independent
+* summarize puts these summaries together
+```{r}
+gsa %>%
+  filter(!is.na(Year)) %>%
+  filter(Country != "") %>%
+  group_by(Country) %>%
+  summarise(min = min(Year)) %>%
+  arrange(Country) %>% ## put string factor as false
+  head(10)
+```
