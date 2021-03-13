@@ -1,0 +1,122 @@
+---
+title: "IMT573 Problem Set 3: Scrape data and get it in shape"
+author: "Lipsa Jena"
+date: "10/27/2020"
+output: html_document
+---
+
+```{r, include=FALSE}
+# Loading the required packages.
+
+library(rvest)
+library(dplyr)
+```
+
+## Scrape the web
+
+In this problem set, I will be implementing my knowledge gained in Week 4's Web topic - **Web Scraping**.  In particular, I am going to load four datasets from https://www.drroyspencer.com/. 
+
+#### 1. Load the webpage
+
+I have used the **__rvest package__** to work on web scraping. I used function `read_html` to load data from Dr Roy Spencer's Website and stored the html in the `read_page` variable.
+
+```{r}
+url <- "https://www.drroyspencer.com/"
+read_page <- read_html(url)
+cat("Page details are below")
+read_page
+```
+
+
+
+#### 2. Find the most recent such post (i.e. the first such post on the page) and extract from its title:
+#### (a) Date (month and year)
+#### (b) Current temperature anomaly
+
+Getting to the classes first and storing the node in a variable called `Global_temp`, which will be used later for calculating the Date and Current temperature anomaly:
+
+```{r}
+
+Global_temp <- read_page %>%
+  html_nodes("div.narrowcolumn") %>%
+  html_nodes("div.post-13580.post.type-post.status-publish.format-standard.hentry.category-blogarticle")
+
+```
+
+Created `date` variable to get date:
+
+```{r}
+date <- Global_temp  %>%
+  html_nodes("small")%>%
+  html_text()
+
+cat("The most recent date from the post is: ", date)
+```
+
+Created `temp` variable to get current temperature anomaly:
+
+```{r}
+temp <- Global_temp %>%
+  html_nodes("h2") %>%
+  html_nodes("a") %>%
+  html_text("title")
+
+words <- strsplit(temp, "[[:space:]]+")[[1]] # break sentence on spaces,
+# tabs and such
+i <- which(words == "2020:")
+
+cat("The current temperature anamoly in 'deg' is: ", words[i+1])
+
+```
+
+#### 3. Find the links to data files
+
+Getting all the links realted to lower troposphere, mid-troposphere, tropopause, and lower stratosphere. Storing the link details in the variable `alllinks`.
+```{r}
+para <- Global_temp %>%
+  html_nodes("div.entry") %>%
+  html_nodes("p") 
+
+pos_lt <- grep("Lower Troposphere",para)
+
+alllinks <- para[pos_lt] %>%
+  html_nodes("a") %>%
+  html_text()
+
+cat("The links which we will be saving in next steps are:\n")
+for(i in 1:length(alllinks)){
+  cat(alllinks[i], "\n")
+}
+
+
+```
+
+#### 4. Download the data files.
+
+In the next step, I am downloading all the links and saving the data in csv files.
+
+```{r}
+
+for(i in 1:length(alllinks)){
+
+  newfile <- paste("newdata","~",i,".csv", sep = "")
+  data <- readLines(alllinks[i])
+  writeLines(data,newfile)
+  cat(alllinks[i], " saving in:", newfile, "\n")
+}
+
+
+```
+
+#### 5. Challenge - Find the paragraph where the current linear warming trend.Extract that one (in C/decade).
+
+
+```{r}
+pos_dec <- grep("C/decade", para)
+cat("The paragraph with current linear warming trend is:")
+html_text(para[pos_dec])
+```
+
+#### 6. Finally, how much time did you spend on this PS?
+
+It took me around 4 hours to finish everything properly including, indentation as well as commenting.

@@ -1,0 +1,76 @@
+---
+title: "inc05Lb"
+author: "Lipsa Jena"
+date: "10/28/2020"
+output: html_document
+---
+
+```{r}
+titanic <- read.csv("../data/titanic.csv.bz2")  ##loading data
+head(titanic)                        
+```
+
+```{r}
+library(ggplot2)
+```
+
+
+```{r}
+
+ggplot(titanic, aes(age)) +
+  geom_histogram(fill = "lightblue", col="white")
+```
+
+this is a right skewed distibution.
+
+```{r}
+x<-rnorm(1000)
+hist(x, breaks = 30 , col = "lightblue")
+```
+
+ggplot is good for data but not for random thing.
+
+#Binomial process
+
+```{r}
+x<- rbinom(1000,1, 0.5) #number of exoeriments, number of coins, probab.
+hist(x, breaks = 10,  col = "pink")
+```
+
+
+```{r}
+x<- rbinom(1000,15, 0.5) #number of exoeriments, number of coins, probab.
+hist(x, breaks = 30,  col = "pink")
+```
+
+
+```{r}
+x <- VGAM::rpareto(100, shape = 10)
+hist(x, breaks = 30,  col = "pink")
+```
+
+
+```{r}
+R <- 10000 #how many experiments
+means <- numeric(R) # empty vector for means
+for(i in 1:R){
+  x <- VGAM::rpareto(1000, shape =10)
+  means[i] <- mean(x)
+}
+hist(means, breaks = 100, col = "pink")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
