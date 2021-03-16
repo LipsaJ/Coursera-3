@@ -1,0 +1,242 @@
+---
+title: "Week4MondayReadings"
+author: "Lipsa Jena"
+date: "10/19/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#lists
+
+atomic variables are (atomic) vectors
+```{r}
+a <- 1:3
+a
+```
+
+```{r}
+a+1
+a*2
+a
+
+```
+
+lists can contains different types of elements
+below lists contains three componanents- vector, string , logical value
+
+```{r}
+l <- list(1:3,"xyz",TRUE)
+l
+```
+extract elements 
+```{r}
+a[2]
+## for list use double brackets
+l[[1]]
+
+```
+
+using pipes as we;;
+```{r}
+l %>%  #expects an function
+  "[["(1) # the same as extractor
+```
+
+string functions
+search for pattern `grep`
+```{r}
+names <- c("Lipsa", "Li zhao", "Mi kane")
+grep("Li", names)
+grep("Li", names, value = TRUE)
+
+```
+# exercise
+
+```{r}
+strs <- c("I will help you catch him", "Bring four men with you", "Do not sleep tonight")
+grep("sleep", strs) #index
+grep("sleep", strs, value = TRUE) #sentence
+grep("sleep", strs, value = TRUE,ignore.case = TRUE) #sentence
+grep("sleep", tolower(strs)) #index
+
+```
+
+## tokenize with strsplit
+
+```{r}
+sentences <- c("The watchman nodded.", "The monk led the five men to mountains")
+strsplit(sentences, " ")
+```
+
+
+```{r}
+strsplit(sentences, " ")[[1]]
+```
+
+```{r}
+sentence <- "Tonight, between third and fifth watch, I intend to catch the thief"
+words <- strsplit(sentence, " ") #extract only a sentence
+print(words)
+words <- words[[1]]
+pos <- which(words == "watch,")
+pos
+
+words[pos - 1]
+
+```
+professors solution
+
+```{r}
+strs <- c("I will help you catch him", "Bring four men with you", "Do not sleep tonight")
+grep("sleep", strs) #index
+# word before sleep
+words <- strsplit(strs, " ")[[3]]
+print(words)
+pos <- which(words == "sleep")
+print(words[pos-1])
+
+```
+###professors solution
+```{r}
+strs <- c("I will help you catch him", "Bring four men with you", "Do not sleep tonight")
+sleepy <- grep("sleep", strs, value = TRUE) %>%
+  strsplit(" ") %>%
+  "[["(1) 
+sleepy
+
+```
+
+### Nats solution
+```{r}
+strs <- c("I will help you catch him", "Bring four men with you", "Do not sleep tonight")
+pos <- which(strsplit(grep("sleep",strs,value=TRUE)," ")[[1]]=="sleep")
+pos
+```
+
+#Web scraping
+
+```{r, message=FALSE}
+library(rvest)
+```
+
+## load webpage
+
+```{r}
+page <- read_html("../data/scrape-example.html")
+page
+
+## url<- "https://en.wikipedia.org/wiki/Main_Page"
+
+```
+## extraction
+```{r}
+page %>%
+  html_node("title") %>%
+  html_text() ## pull out title
+```
+```{r}
+page %>%
+  html_node("h1") %>%
+  html_text() ## pull out title
+```
+
+## extract paragraph
+```{r}
+P1 <- page %>%
+  html_node("p")
+P1 %>%
+  html_text() %>%
+  cat()
+
+```
+
+```{r}
+P1 <- page %>%
+  html_node("p.quote")
+P1 %>%
+  html_text() %>%
+  cat()
+
+```
+
+
+# all elements
+```{r}
+P1 <- page %>%
+  html_nodes("p")
+P1
+
+```
+
+## looping over the list of paragrapohs
+```{r}
+for(p in P1){
+  p %>%
+    html_text() %>%
+    cat()
+  
+  cat("\n--------\n")
+  
+}
+
+## pulling out second paragraph
+P1[[2]]
+```
+
+## extract an A element
+
+```{r}
+
+A <- page %>%
+  html_node("p") %>%
+  html_node("a") 
+A %>%
+  html_text() %>%
+  cat()
+
+```
+## extract Attributes.
+
+```{r}
+A %>%
+  html_attr("href")
+```
+
+## extract number of artivles English ID
+
+# load from internet in cache memory
+```{r}
+url <- "https://en.wikipedia.org/wiki/Main_Page"
+wiki <- read_html(url)
+wiki
+```
+in the next chunk we work with the results
+
+```{r}
+wiki %>%
+  html_node("div#articlecount") %>%
+  html_node("a") %>%
+  html_text() %>%
+  cat()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
