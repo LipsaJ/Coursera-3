@@ -1,0 +1,279 @@
+---
+title: "ps02"
+author: "Lipsa Jena"
+date: "10/20/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+data(flights, package="nycflights13")
+data(flights, package="nycflights13")
+## all the variables details
+str(flights)
+summary(flights)
+
+
+```
+
+
+how many nycflights?
+```{r}
+nrow(flights)
+flights_data <- flights 
+flights_data %>%
+  select(dest) %>%
+  n_distinct() # distinct flight
+  
+
+nrow(flights_data ) # total flight take off from NYC
+```
+
+flights to seattle
+
+```{r}
+
+flights_data %>%
+  filter(dest == "SEA") %>%
+  nrow()
+```
+nyc to BOI
+```{r}
+
+flights_data %>%
+  filter(dest == "BOI") %>%
+  nrow()
+
+```
+
+
+```{r}
+class(flights_data)
+val <- grepl("^[[:upper:]]{3}$",flights_data[["dest"]]) 
+class(val)
+sum(val)
+  
+```
+
+
+part 2.1
+
+
+```{r}
+
+## This is to check how many flights arrived late
+
+flights_data %>%
+  filter(dep_delay > 0 ) %>%
+  summarise(mean(dep_delay, na.rm = TRUE))
+
+flights_data %>%
+  summarise(mean(arr_delay, na.rm = TRUE))
+
+nrow(flights)
+summary(flights_data[["dep_delay"]])
+
+flights_data %>%
+  #filter(origin %in% c("JFK","LGA")) %>%
+  filter(dep_delay > 0 ) %>% ## taking only positives as we dont mind if the flight is early
+  select(dep_delay, dest) %>%
+  group_by(dest) %>%
+  summarise(mean(dep_delay, na.rm = TRUE))
+
+
+```
+
+```{r}
+flights_data %>%
+  mutate(new_del = (dep_delay+arr_delay)/2) %>%
+  select(dep_delay, arr_delay, new_del) %>%
+  filter(new_del > 0) %>%
+  summarize(mean(new_del, na.rm = TRUE))
+```
+
+```{r}
+flights_data %>%
+  filter ( is.na(dep_delay) & is.na(arr_delay))
+
+## this says that the flights were cancelled
+```
+weather
+
+```{r}
+#total flights
+flights_data %>%
+  mutate(season = ifelse(month %in% 3:5, "Spring", ifelse(month %in% 6:8, "Summer",ifelse(month %in% 9:11, "Autumn","Winter")))) %>%
+  #filter(dep_delay > 0) %>%
+  select(month,dep_delay) %>%
+  group_by(month) %>%
+  summarise(num_delay = n()) 
+
+
+#tital delays by month
+new_data <- flights_data %>%
+  mutate(season = ifelse(month %in% 3:5, "Spring", ifelse(month %in% 6:8, "Summer",ifelse(month %in% 9:11, "Autumn","Winter")))) %>%
+  filter(dep_delay > 0) %>%
+  select(month,dep_delay,season) %>%
+  group_by(month, season) %>%
+  summarise(num_delay = n()) 
+
+
+
+ggplot(new_data, aes(x = factor(month), y = num_delay, color = factor(season))) +
+  geom_point() 
+  #facet_wrap(~ month, nrow = 4)
+
+
+# everyday delay in a season
+new_data <- flights_data %>%
+  mutate(season = ifelse(month %in% 3:5, "Spring", ifelse(month %in% 6:8, "Summer",ifelse(month %in% 9:11, "Autumn","Winter")))) %>%
+  filter(dep_delay > 0) %>%
+  #select(month,dep_delay,season) %>%
+  group_by(month,season,day) %>%
+  summarise(num_delay = n()) 
+
+#weather data
+
+# everyday delay in a season
+new_weat <- weather%>%
+  mutate(season = ifelse(month %in% 3:5, "Spring", ifelse(month %in% 6:8, "Summer",ifelse(month %in% 9:11, "Autumn","Winter")))) %>%
+  #select(month,dep_delay,season) %>%
+  group_by(month,season,origin) %>%
+  summarise(mean(temp)) 
+
+
+ggplot(new_data, aes(x = factor(month), y = num_delay, fill = season)) +
+  geom_boxplot(color="red",  alpha=0.2) 
+```
+
+```{r}
+
+# everyday delay in a season
+new_data <- flights_data %>%
+  mutate(season = ifelse(month %in% 3:5, "Spring", ifelse(month %in% 6:8, "Summer",ifelse(month %in% 9:11, "Autumn","Winter")))) %>%
+  filter(dep_delay > 0) %>%
+  #select(month,dep_delay,season) %>%
+  group_by(month,season,day) %>%
+  summarise(num_delay = n()) 
+
+#weather data
+
+# everyday delay in a season
+new_weat <- weather%>%
+  mutate(season = ifelse(month %in% 3:5, "Spring", ifelse(month %in% 6:8, "Summer",ifelse(month %in% 9:11, "Autumn","Winter")))) %>%
+  #select(month,dep_delay,season) %>%
+  group_by(month,season,origin) %>%
+  summarise(mean(temp)) 
+
+new_weat
+
+ggplot(new_data, aes(x = factor(month), y = num_delay, fill = season)) +
+  geom_boxplot(color="red",  alpha=0.2) 
+```
+
+```{r}
+
+weat <- weather %>%
+  filter(!is.na(humid))
+
+ggplot(data = weat, mapping = aes(x = factor(month), y = humid, col = humid)) +
+  geom_boxplot(color = "red", alpha = 0.2)
+
+weather
+```
+
+
+```{r}
+flights_data %>%
+  mutate(season = ifelse(month %in% 3:5, "Spring", ifelse(month %in% 6:8, "Summer",ifelse(month %in% 9:11, "Autumn","Winter")))) %>%
+  filter(dep_delay > 0) %>%
+  select(season,dep_delay) %>%
+  group_by(season) %>%
+  summarise(mean(dep_delay))
+```
+
+
+
+2.2 Let's fly to Minneapolis! (20pt)
+1
+```{r}
+flights_data %>%
+  filter(dest == "MSP") %>%
+  nrow()
+```
+2
+
+```{r}
+flights_data %>%
+  filter(dest == "MSP") %>%
+  select(carrier) %>%
+  n_distinct()
+
+```
+3
+```{r}
+flights_data %>%
+  filter(dest == "MSP") %>%
+  group_by(carrier) %>%
+  summarise(msp_flights = n())
+```
+
+```{r}
+flights_data %>%
+  filter(dest == "MSP") %>%
+  group_by(origin, tailnum) %>%
+  summarise(msp_flights = n())
+```
+5
+```{r}
+total_flight <- flights_data %>%
+  filter(dest == "MSP") %>%
+  summarise()
+
+delayed_flight <- flights_data %>%
+  filter(dest == "MSP" & arr_delay > 15) %>%
+  nrow()
+
+delayed_flight/total_flight*100
+```
+6
+```{r}
+total <- flights_data %>%
+  filter(dest == "MSP" & !is.na(arr_delay) ) %>%
+  group_by(origin) %>%
+  summarise(n_count1 = n())
+
+delay <- flights_data %>%
+  filter(dest == "MSP" & arr_delay > 15 & !is.na(arr_delay)) %>%
+  group_by(origin) %>%
+  summarise(n_count2 = n())
+
+merge(total, delay, by="origin") %>%
+  mutate(percnt = n_count2/n_count1*100)
+
+```
+
+7
+```{r}
+total <- flights_data %>%
+  filter(dest == "SEA" & !is.na(arr_delay) ) %>%
+  group_by(origin) %>%
+  summarise(n_count1 = n())
+
+delay <- flights_data %>%
+  filter(dest == "SEA" & arr_delay > 15 & !is.na(arr_delay)) %>%
+  group_by(origin) %>%
+  summarise(n_count2 = n())
+
+merge(total, delay, by="origin") %>%
+  mutate(percnt = n_count2/n_count1*100)
+
+```
