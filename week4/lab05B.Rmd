@@ -1,0 +1,126 @@
+---
+title: "IMT573 Lab 5: probability"
+author: "Lipsa Jena"
+date: "10/28/2020"
+output: html_document
+---
+
+## Toss two coins
+
+#### 1. Which objects are you tossing? If these are not coins, what event will you call "heads"?
+
+I am tossing two coins.One fifty cents coin and one Quarter dollar coin.
+
+#### 2. Toss two coins (or other objects) at least 20 times each. Each time note how many heads did you get.
+
+I selected two coins and I am calling them `Gold Coin` and `Silver Coin`. I am assigning head as 1 and tail as 0, below is data for how it turned out:
+
+```{r}
+Gold_Coin <- c(0,0,1,1,0,0,1,1,0,1,1,0,1,0,1,1,0,0,0,0)
+Silver_Coin <- c(1,1,1,1,0,1,0,1,1,0,0,0,0,1,1,1,1,0,0,0)
+```
+
+#### 3. Create a (readable)! table about the number of heads in each trial.
+
+Creating a data frame - `coins.data` to store my result set of tossing coins
+
+```{r}
+Trail <- 1:20
+
+#counting the total number of heads.
+Number_of_heads <- Gold_Coin + Silver_Coin 
+
+coins.data <- data.frame(Trail, Gold_Coin, Silver_Coin, Number_of_heads)
+
+```
+
+```{r,include=FALSE}
+# Loaded the necessary data
+library(dplyr)
+```
+
+Here presenting them in table format: 
+
+```{r}
+knitr::kable(coins.data)
+```
+
+#### 4 Show a summary table of your results (0 heads~ how many times; 1 head~how many times..)
+
+```{r}
+#count the number of times 0 heads appear:
+head0 <- coins.data %>%
+  filter(Number_of_heads == 0) %>%
+  nrow()
+
+#count the number of times 1 head appears:
+head1 <- coins.data %>%
+  filter(Number_of_heads == 1) %>%
+  nrow()
+
+#count the number of times 2 heads appear:
+head2 <- coins.data %>%
+  filter(Number_of_heads == 2) %>%
+  nrow()
+
+# Preparing to show summary data in table format.
+
+cases <- c("The number of times 0 heads appear", "The number of times 1 head appears", "The number of times 2 heads appear")
+Count_of_heads <- c(head0,head1,head2)
+```
+
+Summary table is :
+
+```{r}
+#creating a data frame to store summary table
+summary_table <- data.frame(cases, Count_of_heads)
+
+knitr::kable(summary_table)
+
+```
+
+#### 5. Compute mean of your results
+
+Calculating the mean of total number of heads:
+
+```{r}
+meanC <- mean(coins.data$Number_of_heads)
+cat("Mean of total number of heads is :", meanC)
+```
+
+#### 6. Compute variance of your results. We recommend to use the shortcut formula.
+
+```{r}
+# We have mean from previous question. Lets calculate mean^2
+
+meanCsq <- meanC^2
+cat("mean square is: ", meanCsq)
+
+# Lets calculate the Square mean of all the heads.
+
+sqMean <- sum(Number_of_heads^2)/20
+cat("square mean is: ", sqMean)
+
+variance <- sqMean-meanCsq
+
+cat("Variance of Number of heads is: ", variance)
+
+
+```
+
+#### 7. Plot a histogram of your results.
+
+Below is a plot of histogram:
+
+```{r}
+hist(coins.data$Number_of_heads, breaks = 10,  col = "pink")
+```
+
+#### 8. What type of distribution is this, discrete or continuous? Do you know how it is called?
+
+The histogram above is a discrete distribution. Discrete distribution is one in which the data can only take certain fixed values. For example; here the variable `Number of heads` can have only three values; i.e, 0, 1, 2.
+As the `Number of heads` cannot have values like 0.5 or 1.5, this is a **Discrete distribution**.
+
+#### 9. Does it look symmetric, or right/left skewed?
+
+This distrubution is perfectly symmetric. As professor mentioned in the class this is expected to be a normal distribution which is __Symmetric__.

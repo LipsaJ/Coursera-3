@@ -1,0 +1,346 @@
+---
+title: 'IMT573 Problem Set 2: Data manipulations and plotting'
+author: "Lipsa Jena"
+date: "10/21/2020"
+output: html_document
+---
+
+
+## Section 1: Work with NYC flights data
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+## Loading the required packages
+library(dplyr)
+library(ggplot2)
+```
+
+#### 1. Load the data
+
+```{r}
+
+data(flights, package="nycflights13")
+data(weather, package="nycflights13")
+
+```
+
+Loaded the required dataset for todays problem set. I will be using flights data set for most of the problems.
+
+#### 2. Ensure you know the variables in the data. 
+
+```{r, results='hide'}
+str(flights)
+summary(flights)
+str(weather)
+summary(weather)
+?flights
+?weather
+```
+
+I did the basic inspection and don't want to publish the output as its huge, that's why I am hiding it. Next step I will be showing the names of all the variables.
+
+```{r}
+# variable names in flights data set
+names(flights)
+
+# variable names in weather data set
+names(weather)
+
+```
+
+## Section 2: Explore the data
+
+#### 1. How many fliights out of NYC are there in the data?
+
+As this data set contains all the flight from the three NYC airports, total number of flight taking off are `r nrow(flights)`.
+
+#### 2. How many NYC airports are included in this data? Which airports are these?
+
+```{r}
+flights_data <- flights 
+t_nyc <- flights_data %>%
+  select(origin) %>%
+  distinct() 
+
+# Total number of NYC airports are:
+nrow(t_nyc)
+
+# Below are the list of airports:
+t_nyc
+```
+
+
+#### 3. Into how many airports did the airlines fly from NYC in 2013? 
+
+```{r}
+
+flights_data %>%
+  select(dest) %>%
+  n_distinct() 
+```
+
+#### 4. How many flights were there from NYC to Seattle (airport code SEA)? 
+
+```{r}
+
+flights_data %>%
+  filter(dest == "SEA") %>%
+  nrow()
+```
+
+#### 5. Were the any flights from NYC to Bose, ID (BOI)? 
+
+```{r}
+
+flights_data %>%
+  filter(dest == "BOI") %>%
+  nrow()
+```
+
+No there were no flights from NYC to Bose.
+
+#### 6. What about missing destination codes? Are there any destinations that do not look like valid airport codes (three-letter-all-upper case)? 
+
+```{r}
+
+any(grepl("^[[:upper:]]{3}$", flights_data["dest"]))
+
+```
+
+There were no missing destinations.
+
+### 2.1 Flights are delayed...
+
+
+In the data set their are two types of delay, one is arrival delay and other one is departure delay. for this problem, I am going to consider only departure delay. I am reformulating the question below
+
+
+#### 1. What is the typical departure delay of the flights in this data?
+
+```{r}
+flights_data %>%
+  filter(dep_delay > 0 ) %>%
+  summarise(mean(dep_delay, na.rm = TRUE))
+```
+
+The typical departure delay is 39.4 minutes.
+
+#### 2. Did you remember to check how good is the delay variable? Are there missings? Are there any implausible or invalid entries? Go and check this.
+
+Lets find out the missing delays first:
+
+```{r, results='hide'}
+
+# flights which departed late
+d_late<- flights_data %>%
+  filter (is.na(dep_delay)) %>%
+  nrow()
+
+# flights which arrived late
+a_late <- flights_data %>%
+  filter (is.na(arr_delay)) %>%
+  nrow()
+```
+
+Total number of flights which has missing data for - **departed late are `r d_late` and which arrived late are `r a_late` **.
+
+Lets find flights which has missing values for both the delay
+
+```{r}
+flights_data %>%
+  filter ( is.na(dep_delay) & is.na(arr_delay)) %>%
+  head()
+```
+
+If we look at this data, we will notice that they have no arrival time or no departure time, according to me these flights were probably **cancelled** .
+
+#### 3. Now compute the delay by destinations. Which ones are the worst three destinations in terms of the longest delay?
+
+In this question, we are taking arrival delay which is arr_delay variable. The below gives worst three delayed destinations in terms of average wait time.
+
+```{r}
+
+flights_data %>%
+  filter(arr_delay > 0 ) %>% ## taking only positives as we dont mind if the flight is early
+  select(arr_delay, dest) %>%
+  group_by(dest) %>%
+  summarise(avg_delay_time = mean(arr_delay, na.rm = TRUE)) %>%
+  arrange(desc(avg_delay_time)) %>%
+  head(3)
+
+```
+
+#### 4. Delays may be partly related to weather. We do not have weather information here but let's analyze how it is related to season. Do it in two (or more) ways: one graphical, and one in a table form.
+
+I am taking the delay in departure as we will be considering the weather in NYC.
+
+```{r, include=FALSE}
+
+# everyday delay in a season
+new_data <- flights_data %>%
+  mutate(season = ifelse(month %in% 3:5, "Spring", ifelse(month %in% 6:8, "Summer",ifelse(month %in% 9:11, "Autumn","Winter")))) %>%
+  filter(dep_delay > 0) %>%
+  #select(month,dep_delay,season) %>%
+  group_by(month,season,day) %>%
+  summarise(num_delay = n()) 
+
+
+```
+
+```{r}
+
+# box plot of flights delayed by month and color coded by season.
+ggplot(new_data, aes(x = factor(month), y = num_delay, fill = season)) +
+  geom_boxplot(color="red",  alpha=0.2) 
+
+# box plot of weather by month
+ggplot(data = weather, mapping = aes(x = factor(month), y = humid, col = humid)) +
+  geom_boxplot(color = "red", alpha = 0.2)
+
+```
+
+
+I would like to mention few of the observations from the box plot of flights delayed and the box plots of weather.
+
+1) weather has most of the rainy dats in June July and december, and these are the months when most of the flights are delayed.
+2) best season for no delay is Autumn due to clarity.
+
+#### 5. We'd also like to know how much do delays depend on the time of day. Are there more delays in foggy morning hours? Late night when all the daily delays accumulate? Create a visualization (graph or table) using a different approach than what you did above.
+
+```{r}
+
+# everyday delay in a season
+new_data <- flights_data %>%
+  mutate(timeofday = ifelse(sched_dep_time %in% 0800:1800, "Day", ifelse(sched_dep_time %in% 1801:2359,"Night" , ifelse(sched_dep_time %in% 0000:0330, "Night","Morning"))))%>%
+  filter(dep_delay > 0) %>%
+  #select(month,dep_delay,season) %>%
+  group_by(month,timeofday,day) %>%
+  summarise(num_delay = n()) 
+
+# box plot of flights delayed by month and color coded by day of the time
+ggplot(new_data, aes(x = factor(month), y = num_delay, fill = timeofday)) +
+  geom_boxplot(color="red",  alpha=0.8) 
+
+
+```
+
+
+I have made the box plot as per the previous question but added a time of the day filter, it looks like that  most of the flights are delayed in the day time itself. As the number of flights are quite high as well during the day time.
+
+#### 6. Do you see any problems with these questions (and answers)? If you feel a question is not defined well enough, re-formulate it in a more specific way so you actually can answer this question. And state clearly what exactly is your more precise question.
+
+In the data set their are two types of delay, one is arrival delay and other one is departure delay. for this problem, I considered departured delay and arrival delay as per my understanding of the questions.
+
+### 2.2 Let's fly to Minneapolis! 
+
+#### 1. How many flights were there from NYC airports to Minneapolis in 2013?
+
+The number of flights from NYC to Minneapolis are:
+
+```{r}
+flights_data %>%
+  filter(dest == "MSP") %>%
+  nrow()
+```
+
+#### 2. How many airlines fly from NYC to Minneapolis?
+
+The number of airlines from NYC to Minneapolis are:
+
+```{r}
+flights_data %>%
+  filter(dest == "MSP") %>%
+  select(carrier) %>%
+  n_distinct()
+
+```
+
+#### 3. Which are these airlines (find the 2-letter abbreviations)? How many times did each of these fly to Minneapolis?
+
+The number of airlines and their total number of fly count to Minneapolis:
+
+```{r}
+flights_data %>%
+  filter(dest == "MSP") %>%
+  group_by(carrier) %>%
+  summarise(msp_flights = n())
+```
+
+#### 4. How many different airplanes arrived from each of the three NYC airports to Minneapolis?
+
+```{r}
+flights_data %>%
+  filter(dest == "MSP") %>%
+  select(origin, tailnum) %>%
+  distinct() %>%
+  count(origin)
+  
+```
+
+#### 5. What percentage of flights to Minneapolis were delayed at arrival by more than 15 minutes?
+
+```{r}
+total_flight <- flights_data %>%
+  filter(dest == "MSP") %>%
+  nrow()
+
+delayed_flight <- flights_data %>%
+  filter(dest == "MSP" & arr_delay > 15) %>%
+  nrow()
+
+delayed_flight/total_flight*100
+
+```
+
+Almost 22% were delayed while arrival at Minneapolis
+
+#### 6. And finally answer the question above for each origin airport separately. Is one of the airportsnoticeably worse than others?
+
+
+```{r, include=FALSE}
+total <- flights_data %>%
+  filter(dest == "MSP"  ) %>%
+  group_by(origin) %>%
+  summarise(n_count1 = n())
+
+delay <- flights_data %>%
+  filter(dest == "MSP" & arr_delay > 15 ) %>%
+  group_by(origin) %>%
+  summarise(n_count2 = n())
+```
+
+The delayed flights percentage for each of the NYC flights arriving at Minneapolis is:
+
+```{r}
+merge(total, delay, by="origin") %>%
+  mutate(percnt = n_count2/n_count1*100) %>%
+  select(origin, percnt )
+
+```
+
+The worst affected among all three is JFK
+
+### 2.3 Think about all this
+
+#### 1. Do you see any issues with data?
+
+I have issues regarding the missing values in the arrival and departure delay sections as mentioned before. I assume data missing the actual arrival and departure time are actually flights cancelled. Also there is data, when departurre data is mentioned but no arrival data. I would like to know what happened to that flight. For example below code:
+
+```{r}
+flights_data %>%
+  filter ( !is.na(dep_time) & is.na(arr_time)) 
+```
+
+There is no arrival data mentioned. What happens to those flight?
+
+#### 2. Ethical concerns?
+
+As such I dont have any ethical concerns with the data as we dont see anyone's personal data like age, pilots name, gender (nothing personal) As professors mentions in the class, may be the data provides company airline data, but in that scenario, all the flights data are already available in the internet.
+
+#### 3. Can these questions be answered? Are these questions meaningful? Do you see potential applications for these answers?
+
+Yes, the questions were meaningful as I was able to corelate delays of flight with respect to weather and season. I do see potential applications for these answers, as you users can expect or predict future delays.
+
+Also, For working and understanding R, this was a very good dataset to apply. I was able to apply my learnings well.
+
