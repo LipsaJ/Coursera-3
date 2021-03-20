@@ -1,0 +1,105 @@
+---
+title: "INFX 573 Lab: Exploring Data"
+author: "Lipsa Jena"
+date: "`r format(Sys.time(), '%Y-%m-%d')`"
+urlcolor: blue
+output: html_document
+---
+
+Collaborators: 
+
+1. Aditya Challa
+
+# Explore Titanic Data: Survival and Passenger Class
+
+## Preparation
+
+Load any add-on packages if needed:
+
+```{r Setup, message=FALSE}
+library(tidyverse)  # loaded tidyverse
+```
+
+## Explore Data
+
+### 1. Sinking of RMS  Titanic analysis:
+As part of this Assignment, we are going to analyse an important question of the RMS  Titanic sinking:
+**Did higher class passangers have more chance to survive?** 
+
+### 2. Load data
+
+```{r Read in Data, eval=FALSE}
+titanic <- read.csv("../data/titanic.csv.bz2")  ##loading data
+                           
+```
+
+_we loaded the dataset into our R project._ 
+
+### 3. Inspect data.
+
+#### a) rows and columns
+
+```{r inspect}
+## inspecting data
+titanic <- read.csv("../data/titanic.csv.bz2")
+nrow(titanic)
+ncol(titanic)
+```
+
+_The number of variables in this  are `r ncol(titanic)`  and the  number of cases are `r  nrow(titanic)`._
+
+#### b) first and last lines
+
+```{r}
+head(titanic,2) 
+tail(titanic,2)
+```
+
+_The **head** command shows top rows and the **tail** command shows from the bottom rows._
+
+#### c) important variables
+The  important variables for this analysis are: 'pclass'  and 'survived' which will  tell us the survival rate in titanic with respect to each class.
+
+#### d) checking missing values in the relevent variables
+```{r}
+## checking if any of the relevent variables are missing values
+sum(is.na(titanic$pclass)) 
+sum(is.na(titanic$survived)) 
+sum(is.na(titanic$sex)) 
+sum(is.na(titanic$age)) 
+```
+
+### 4. How is survival probability related to passenger class?
+
+```{r}
+## split the data into classes
+first <- titanic[titanic$pclass == 1,]
+second <- titanic[titanic$pclass == 2,]
+third <- titanic[titanic$pclass == 3,]
+
+mean(first$survived, na.rm = TRUE) ## survival rate in first class
+mean(second$survived, na.rm = TRUE) ## survival rate in second class
+mean(third$survived, na.rm = TRUE) ## survival rate in third class
+
+```
+
+_Yes, as per our analysis its true that the higher class had a higher survival rate._
+
+
+### 5. Why do you think this was the case?
+
+_If we look at our data only from a class difference perspective, it looks like that the passanger from higher class had a better chance of survival, may be they were provided better facilities and safety. \n Lets look at this from a different perspective, here is survival of each sex type:_
+
+```{r}
+
+male <- titanic[titanic$sex == 'male',]
+female <- titanic[titanic$sex == 'female',]
+
+mean(male$survived, na.rm = TRUE) ## survival of male passengers
+mean(female$survived, na.rm = TRUE) ## survival of female passengers
+```
+
+_The male survival rate is extremely lower than female passangers. That tells us that the female passangers were given first priority to escape irrespective of their seat class. I think the biggest learning of this assignment is to keep an open mind and inspect the other aspects of the provided dataset._
+
+
+

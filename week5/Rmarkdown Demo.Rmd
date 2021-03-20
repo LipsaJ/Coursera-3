@@ -1,0 +1,76 @@
+---
+title: "Rmarkdown demo"
+author: "Lipsa Jena"
+date: "10/7/2020"
+output: html_document
+---
+
+#  1st header
+## 2nd header go upto 6
+A paragraph of plain text **bold**,`typewritter`,  _itallic_
+
+Add images:
+
+![Dog image](https://www.thelabradorsite.com/wp-content/uploads/2019/03/Cute-puppy-Names-Over-200-Adorable-Ideas-LS-long.jpg)
+
+```{r, echo=FALSE}
+1 + 1
+````
+
+# Lets play with sharks
+
+Add images:
+![shark image](https://i.pinimg.com/originals/02/81/9c/02819c18e96b26e2a6e2b82c30000a46.jpg)
+
+
+```{r}
+gsa <- read.delim("../data/GSAF5.csv.bz2")
+```
+
+we loaded the shark file. It contains `r nrow(gsa)`  rows  and `r  ncol(gsa)` columns
+
+Variable names in the data:
+```{r}
+names(gsa)
+```
+
+First few lines of data
+```{r}
+head(gsa, 3)
+```
+
+Analyze the type of attack:
+```{r}
+table(gsa$Type)
+```
+
+Extraxt subset of data: only provoked attacks:
+```{r}
+provoked <- gsa[gsa$Type == "Provoked",]
+nrow(provoked)
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
