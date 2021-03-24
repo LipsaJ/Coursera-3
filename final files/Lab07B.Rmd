@@ -1,0 +1,134 @@
+---
+title: "Lab07"
+author: "Lipsa Jena"
+date: "11/18/2020"
+output: html_document
+---
+
+```{r, include=FALSE}
+library(ggplot2)
+```
+
+## 1. Diamonds price
+
+### 1.1 Diamonds data
+
+Getting the diamond dataset.
+
+#### 1. Load the data and perform basic sanity checks. How many diamonds do we have?
+```{r}
+
+diamonds <- read.delim("../data/diamonds.csv.bz2")
+```
+**basic sanity check:**
+
+checking the summary of diamonds data set:
+
+```{r}
+summary(diamonds)
+```
+
+Checking the first few rows of diamonds data set:
+
+```{r}
+head(diamonds)
+```
+
+**The total number of diamonds in the set are `r nrow(diamonds)`**
+
+#### 2. Inspect the variable cut. What kind of different cuts are there? How frequent are those?
+
+There are a total of 5 cuts and there frequencies can be seen below:
+
+```{r}
+table(diamonds$cut)
+```
+
+### 1.2 Regression analysis
+
+#### 1. Include two variables: the mass of diamonds (carat) and cut. Estimate model of a form
+
+```{r}
+m <- lm(price ~ carat + cut, data = diamonds)
+summary(m)
+```
+
+#### 2. What is the reference category for cut?
+
+The reference categorty for 'cut' is Fair. As we can see in the above resultt set, that cutFair is only missing value in coeficients making it the reference and intercept.
+
+#### 3. Interpret the following coeficients:
+
+#### (a) What is "carat"?
+
+It is `7871.08`. This means that for every 1 carat increase in the mass, the price of diamond increases by `7871.08`
+
+#### (b) What is "cutIdeal"?
+
+It is `1800.92`. This mean for every 1 increase in cutIdeal count, the price of the diamond increases by `1800.92`
+
+#### (c) How much more expensive are ideal-cut diamonds compared to very good-cut diamonds (in average)?
+
+The ideal cut diamonds are expensive by `r 1800.92 - 1510.14` when compared to very good-cut diamonds.
+
+#### (d) What would be the (average) price for 1ct premium cut diamond?
+
+The price of 1ct premium cut diamond is `r 7871.08 + 1439.08 -3875.47`
+
+
+## 2. Challenge
+
+### 1. Plot the price versus mass and add the regression line to it.
+
+
+```{r}
+ggplot(diamonds, aes(price, carat))+
+  geom_jitter(size = 1) +
+  geom_smooth()
+```
+
+
+### 2. Experiment with log scale for a) price, b) carat, c) both. Which plot does look the best?
+
+a) log of price
+```{r}
+ggplot(diamonds, aes(log(price), carat))+
+  geom_jitter(size = 1) +
+  geom_smooth()
+```
+
+
+b) log of carat
+```{r}
+ggplot(diamonds, aes(price, log(carat)))+
+  geom_jitter(size = 1) +
+  geom_smooth()
+```
+
+c) log of both
+```{r}
+ggplot(diamonds, aes(log(price), log(carat)))+
+  geom_jitter(size = 1) +
+  geom_smooth()
+```
+
+
+According to me, log of both looks the best.
+
+### 3. Add the corresponding log-transform to your model. You can run log-transformed models just like lm(log(price) log(carat))
+
+```{r}
+ggplot(diamonds, aes(log(price), log(carat)))+
+  geom_jitter(size = 1) +
+  geom_smooth()
+```
+
+
+```{r}
+plot(lm(log(price) ~ log(carat), data = diamonds))
+```
+
+
+
+
+

@@ -1,0 +1,131 @@
+---
+title: "inc8A"
+author: "Lipsa Jena"
+date: "11/16/2020"
+output: html_document
+---
+
+today we are doing multiple regression.
+
+```{r}
+library(tidyverse)
+data(state)
+states <- as.data.frame(state.x77)
+states %>%
+  sample_n(5)
+
+```
+
+
+## How is income related to education
+
+```{r}
+ggplot(states) +
+  geom_point(aes(`HS Grad`, Income), col = "blue")
+```
+
+linear model
+
+```{r}
+m <- lm(`HS Grad` ~ Income, data = states)
+summary(m)
+```
+#lm(y tilda x)
+
+
+How to plot regression line:
+```{r}
+ggplot(states, aes(`HS Grad`, Income)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+se = False
+
+```{r}
+ggplot(states, aes(`HS Grad`, Income)) +
+  geom_point() +
+  geom_smooth(method = "lm", se=FALSE)
+```
+
+
+BAse R plot
+
+```{r}
+plot(Income ~ `HS Grad`, data=states)
+abline(m, col="red")
+```
+
+
+```{r}
+ggplot(states, aes(`Life Exp`, Murder)) +
+  geom_point() +
+  geom_smooth(method = "lm", se=FALSE)
+```
+
+
+```{r}
+ggplot(states, aes( Murder, `Life Exp`)) +
+  geom_point() +
+  geom_smooth(method = "lm", se=FALSE)
+```
+
+
+```{r}
+m <- lm(`Life Exp` ~ Murder, data = states)
+summary(m)
+```
+
+wednesday class
+
+```{r}
+data(Credit, package = "ISLR")
+head(Credit)
+```
+
+```{r}
+hist(Credit$Balance, breaks = 20, col = "lightpink")
+```
+
+
+```{r}
+library(dplyr)
+Credit %>%   
+  group_by(Student) %>%   
+  summarize(mean(Balance))
+```
+
+
+linear model
+```{r}
+m <- lm(Balance ~ Student, data = Credit)
+summary(m)
+```
+
+#multi category dummy
+
+balance by ethnicity
+```{r}
+Credit %>%
+  group_by(Ethnicity) %>%
+  summarise(mean(Balance))
+```
+linear model
+```{r}
+m <- lm(Balance ~ Ethnicity, data = Credit)
+summary(m)
+```
+
+
+```{r}
+library(ggplot2)
+ggplot(Credit) + geom_boxplot(aes(x=Balance, fill=Ethnicity), notch=TRUE)
+```
+
+
+
+```{r}
+eth <- factor(Credit$Ethnicity,levels=c("Caucasian", "African American", "Asian"))
+summary(lm(Balance ~ eth, data=Credit))
+```
+

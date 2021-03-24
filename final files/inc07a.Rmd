@@ -1,0 +1,101 @@
+---
+title: "inc07A"
+author: "Lipsa Jena"
+date: "11/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+data(iris)
+```
+
+```{r}
+head(iris)
+dim(iris)
+```
+
+```{r}
+library(tidyverse)
+ggplot(iris, aes(Sepal.Length, Sepal.Width, col = Species))+
+  geom_jitter(size = 3)
+```
+
+```{r}
+setosa <- iris %>%
+  filter(Species == "setosa")
+dim(setosa)
+```
+# plot setosa only
+
+```{r}
+ggplot(setosa, aes(Sepal.Length, Sepal.Width))+
+  geom_jitter(size = 2) +
+  geom_smooth(method = "lm", se = FALSE) ## se is false. dont ponit outsiders
+#lm is linear model, linear regression
+
+```
+
+
+Linear model y = B0 + B1.xi +ei | xi is explanatory variable, B0 and B1 aew numberds, y is dependent variable ; i is index of observation
+
+ei is called epsilon i; our model has two components. 
+
+**linear model is the deterministic components**
+**ei is stochatic model; thats what moves the point away from the linear model**
+
+beta null and beta one; estimated value.; yi = B0 +B1xi; **estimated values** and **residuals**
+**predicted value**
+
+* sum of squared errors (sse)
+manipulate intercept and slope
+
+-- linear model and linear reg -> diff; prof calls linear model is same as linear reg in terms of R
+
+y = mx+c -> compare the linear part
+
+## --------
+from 8.1.2
+
+```{r}
+virginica <- iris %>%
+  filter(Species == "virginica")
+dim(setosa)
+```
+
+```{r}
+beta0 <- 0
+beta1 <-0.5
+yHat <- beta0 +beta1*virginica$Petal.Length
+SSE <- sum((virginica$Petal.Width-yHat)^2)
+SSE
+```
+
+
+## estimate OLS model - ordinary least square
+
+```{r}
+m <- lm(Sepal.Width  ~  Sepal.Length, data = setosa)
+summary(m)
+```
+B1 = 0.8
+
+1f length is larger by 1 them width is by 0.8
+
+
+## income and education
+
+estimate 
+
+```{r}
+B1 = 5000
+B0 = 10000 #(intercept)
+
+```
+
+
+
+

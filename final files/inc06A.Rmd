@@ -1,0 +1,109 @@
+---
+title: "inc06A"
+author: "Lipsa Jena"
+date: "11/2/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+```{r}
+sapply(1:10, sqrt)
+sqrt(1:10)
+```
+
+we can use our own function
+
+```{r}
+sqr <- function(x) x^2
+sapply(1:5, sqr)
+```
+
+if we dont care about the input value
+
+```{r}
+f <- function(x) "Woww!"
+sapply(1:5, f)
+```
+
+use argument:
+```{r}
+g <- function(i) paste("attempt", i)
+sapply(1:6, g)
+```
+write a function that returns sum of three random number
+
+```{r}
+f<- function(x) sum(rnorm(3))
+sapply(1:10, f)
+```
+
+simulations
+# statistical Inference
+
+create polling data
+
+```{r}
+vote <- sample(c("K", "P"), 500, replace = TRUE,
+               prob = c(0.56, 0.44))
+polling <- data.frame(vote=vote)
+head(polling, 7)
+```
+
+Lets write a functionfor poll
+
+```{r}
+poll <- function(x){
+  s<- rbinom(500, 1, 0.5)
+  mean(s)
+}
+
+poll()
+```
+
+conduct 1000 polls
+
+```{r}
+
+R <- 1000
+means <- sapply(1:R, poll)
+mean(means)
+sd(means)
+```
+
+```{r}
+hist(means, col = "pink")
+mean(means)
+sd(means)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

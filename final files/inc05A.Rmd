@@ -1,0 +1,121 @@
+---
+title: "inc05A"
+author: "Lipsa Jena"
+date: "10/26/2020"
+output: html_document
+---
+```{r}
+titanic <- read.csv("../data/titanic.csv.bz2")  ##loading data
+head(titanic)                        
+```
+
+```{r}
+mean(titanic$age, na.rm = TRUE)
+mean(titanic$sex == "female")
+```
+
+```{r}
+mean(titanic$age, na.rm = TRUE)
+mean(titanic$sex == "female")
+```
+
+```{r}
+median(titanic$pclass) #make classes
+```
+
+```{r}
+k <- median(titanic$fare, na.rm = TRUE) #make classes
+m <- mean(titanic$fare, na.rm = TRUE) #make classes
+k
+m
+m - k
+```
+
+#mode; mode common value
+
+```{r}
+modeest::mlv(titanic$age, na.rm= TRUE, method = "mfv")
+```
+
+```{r}
+table(titanic$pclass)
+```
+
+```{r}
+modeest::mlv(titanic$fare, na.rm= TRUE, method = "mfv")
+```
+#variability
+```{r}
+range(titanic$age, na.rm = TRUE)
+range(titanic$pclass)
+```
+
+```{r}
+range(titanic$fare, na.rm = TRUE)
+
+```
+
+
+#variance and standard deviation
+```{r}
+x <- c(1,2,3)
+mean(x)
+var(titanic$age, na.rm = TRUE)
+
+```
+```{r}
+sd(titanic$age, na.rm = TRUE)
+```
+
+
+```{r}
+sd(titanic$fare, na.rm = TRUE)
+mean(titanic$fare, na.rm = TRUE)
+```
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+ggplot(titanic, aes(age)) +
+  geom_histogram(fill = "lightblue", col="white")
+```
+
+
+
+```{r}
+ggplot(titanic,aes(fare)) +
+  geom_histogram(fill= "lightblue", col = "white")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
