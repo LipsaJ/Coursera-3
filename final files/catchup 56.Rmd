@@ -1,0 +1,33 @@
+---
+title: "catchup5-6"
+author: "Lipsa Jena"
+date: "11/11/2020"
+output: html_document
+---
+
+```{r}
+pop_size <- 250000000
+possible_entries <- c(rep("support", 0.88 * pop_size), rep("not", 0.12 * pop_size))
+sampled_entries1 <- sample(possible_entries, size = 1000)
+```
+
+```{r}
+head(possible_entries)
+head(sampled_entries1)
+```
+
+```{r}
+p1 <- sum(sampled_entries1 == "support")/1000
+e1 <- 0.88-p1
+```
+
+```{r}
+sampled_entries2 <- sample(possible_entries, size = 1000)
+p2 <- sum(sampled_entries2 == "support")/1000
+e2 <- 0.88-p2
+```
+```{r}
+sampled_entries3 <- sample(possible_entries, size = 1000)
+p3 <- sum(sampled_entries3 == "support")/1000
+e3 <- 0.88-p3
+```
